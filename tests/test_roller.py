@@ -1,6 +1,7 @@
 import pytest
 
 from roller.dice import Dice, Roller
+from roller.exceptions import InvalidOperation
 
 '''
 >>> dice = Dice(20)
@@ -74,8 +75,25 @@ def test_roller_result_retona_int():
     assert isinstance(result, int)
 
 
-def test_metodo_result_para_operacao_complexa_retorna_int():
-    faces = 2
+def test_metodo_result_para_operacao_complexa_com_soma_retorna_int():
     roller = Roller('1d20 + 3')
     result = roller.result
     assert isinstance(result, int)
+
+
+def test_metodo_result_para_operacao_complexa_com_subtracao_retorna_int():
+    roller = Roller('1d20 - 3')
+    result = roller.result
+    assert isinstance(result, int)
+
+
+def test_metodo_result_para_operacao_complexa_com_subtracao_e_soma_retorna_int():
+    roller = Roller('1d20 - 1d6 + 5')
+    result = roller.result
+    assert isinstance(result, int)
+
+
+def test_metodo_result_para_operacao_invalida():
+    with pytest.raises(InvalidOperation):
+        roller = Roller('a')
+        result = roller.result

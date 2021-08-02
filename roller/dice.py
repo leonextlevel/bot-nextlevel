@@ -1,4 +1,5 @@
 from random import randint
+from roller.exceptions import InvalidOperation
 
 
 def somar(num_1, num_2):
@@ -33,8 +34,11 @@ class Roller:
         try:
             return int(value)
         except ValueError:
-            amount = int(value.split('d')[0])
-            faces = int(value.split('d')[1])
+            try:
+                amount = int(value.split('d')[0])
+                faces = int(value.split('d')[1])
+            except ValueError:
+                raise InvalidOperation
             return sum([
                 Dice(faces).roll() for _ in range(amount)
             ])
