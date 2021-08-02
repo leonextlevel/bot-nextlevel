@@ -17,20 +17,20 @@ class MyClient(discord.Client):
         content = message.content
         print('Mensagem de {0.author}: {0.content}'.format(message))
         if content.startswith("!hello"):
-            await message.channel.send('Hello World!')
+            await message.reply('Hello World!')
 
         if content.startswith('!roll'):
             try:
                 operacao = content.split(maxsplit=1)[1]
                 try:
-                    result = Roller(operacao).result
-                    await message.channel.send(f'Resultado: {result}')
+                    roller = Roller(operacao)
+                    await message.reply(
+                        roller.get_success_message()
+                    )
                 except InvalidOperation:
-                    await message.channel.send(f'Rolagem Inválida!')
+                    await message.reply(Roller.get_error_message())
             except IndexError:
-                await message.channel.send(
-                    f'Defina a operação da Rolagem! Exemplo: !roll 1d20 + 2'
-                )
+                await message.reply(Roller.get_error_message())
 
 
 client = MyClient()

@@ -26,6 +26,8 @@ class Roller:
 
     def __init__(self, operation: str) -> None:
         self.operation = operation
+        self.all_results = {}
+        self.result = self._get_result()
 
     def _calculate(self, num_1, num_2, operator):
         return self.OPERATORS[operator](num_1, num_2)
@@ -39,9 +41,11 @@ class Roller:
                 faces = int(value.split('d')[1])
             except ValueError:
                 raise InvalidOperation
-            return sum([
-                Dice(faces).roll() for _ in range(amount)
-            ])
+            dice_results = []
+            for _ in range(amount):
+                dice_results.append(Dice(faces).roll())
+            self.all_results[value] = dice_results
+            return sum(dice_results)
 
     def _tranform_operation(self):
         '''
@@ -77,8 +81,20 @@ class Roller:
                 num_1 = self._transform_int(pilha.pop())
                 pilha.append(self._calculate(num_1, num_2, item))
         return self._transform_int(pilha.pop())
+    
+    def get_success_message(self):
+        header = '> RESULTADO :game_die:\n'
+        content = ''
+        for dice, value in self.all_results.items():
+            content += f'> {dice}: {value}\n'
+        content += f'> **TOTAL:** {self.result}'
+        return f'{header}{content}'
 
-    @property
-    def result(self):
-        return self._get_result()
-
+    @classmethod
+    def get_error_message(cls):
+        return (
+            '> :robot: Pani no sistema!\n'
+            '> Rolagem inválida :x:\n'
+            '> Tente seguir o exemplo:\n'
+            '> !roll 1d20 + 2'
+        )
