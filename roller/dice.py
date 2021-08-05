@@ -24,13 +24,24 @@ class Roller:
         '-': subtrair,
     }
 
-    def __init__(self, operation: str) -> None:
+    def __init__(self, operation: str, explosion=False) -> None:
         self.operation = operation
+        self.explosion = explosion
         self.all_results = {}
         self.result = self._get_result()
 
     def _calculate(self, num_1, num_2, operator):
         return self.OPERATORS[operator](num_1, num_2)
+
+    def _roll(self, faces, initial=None):
+        if initial is None:
+            initial = []
+        resultados = initial
+        rolagem = Dice(faces).roll()
+        resultados.append(rolagem)
+        if rolagem == faces:
+            resultados.extend(self._roll(faces=faces, initial=resultados))
+        return resultados
 
     def _transform_int(self, value):
         try:
@@ -43,7 +54,7 @@ class Roller:
                 raise InvalidOperation
             dice_results = []
             for _ in range(amount):
-                dice_results.append(Dice(faces).roll())
+                dice_results.extend(self._roll(faces))
             self.all_results[value] = dice_results
             return sum(dice_results)
 
@@ -68,8 +79,7 @@ class Roller:
         if len(aux):
             resultado.append(aux.pop())
         return resultado
-                
-    
+
     def _get_result(self):
         operations = self._tranform_operation()
         pilha = []

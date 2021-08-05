@@ -4,20 +4,12 @@ from roller.dice import Dice, Roller
 from roller.exceptions import InvalidOperation
 
 '''
->>> dice = Dice(20)
-
->>> dice.roll()
-18
-
->>> roller = Roller('1d20')
-
+>>> roller = Roller('1d10')
 >>> roller.result
-18
+{
+    "1d10": [10, 10, 3]
+}
 
->>> roller = Roller('1d20 + 1d6 + 4')
->>> roller = Roller('1d20 + 1d8')
-
->>> 
 '''
 
 

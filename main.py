@@ -19,11 +19,12 @@ class MyClient(discord.Client):
         if content.startswith("!hello"):
             await message.reply('Hello World!')
 
-        if content.startswith('!roll'):
+        if content.startswith('!roll') or content.startswith('!explosion'):
             try:
-                operacao = content.split(maxsplit=1)[1]
+                comando, operacao = content.split(maxsplit=1)
                 try:
-                    roller = Roller(operacao)
+                    is_explosion = comando == '!explosion'
+                    roller = Roller(operacao, explosion=is_explosion)
                     await message.reply(
                         roller.get_success_message()
                     )
