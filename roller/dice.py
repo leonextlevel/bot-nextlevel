@@ -27,7 +27,8 @@ class Roller:
     def __init__(self, operation: str, explosion=False) -> None:
         self.operation = operation
         self.explosion = explosion
-        self.all_results = {}
+        self.results_dict = {}
+        self.results_list = []
         self.result = self._get_result()
 
     def _calculate(self, num_1, num_2, operator):
@@ -36,12 +37,12 @@ class Roller:
     def _roll(self, faces, initial=None):
         if initial is None:
             initial = []
-        resultados = initial
         rolagem = Dice(faces).roll()
-        resultados.append(rolagem)
+        initial.append(rolagem)
         if rolagem == faces:
-            resultados.extend(self._roll(faces=faces, initial=resultados))
-        return resultados
+            nova_rolagem = self._roll(faces=faces, initial=initial)
+            initial = nova_rolagem
+        return initial
 
     def _transform_int(self, value):
         try:
@@ -54,8 +55,10 @@ class Roller:
                 raise InvalidOperation
             dice_results = []
             for _ in range(amount):
-                dice_results.extend(self._roll(faces))
-            self.all_results[value] = dice_results
+                rolagem = self._roll(faces)
+                dice_results.extend(rolagem)
+                self.results_list.extend(rolagem)
+            self.results_dict[value] = dice_results
             return sum(dice_results)
 
     def _tranform_operation(self):
@@ -95,7 +98,7 @@ class Roller:
     def get_success_message(self):
         header = '> RESULTADO :game_die:\n'
         content = ''
-        for dice, value in self.all_results.items():
+        for dice, value in self.results_dict.items():
             content += f'> {dice}: {value}\n'
         content += f'> **TOTAL:** {self.result}'
         return f'{header}{content}'
